@@ -3,9 +3,6 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 
-seed = np.random
-training_epochs = 500
-
 class DataSet():
 
     def __init__(self,seed,n_samples,minx=-10,maxx=10):
@@ -61,6 +58,7 @@ if __name__=='__main__':
     os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3' 
     seed = np.random
     n_samples = 100
+    training_epochs = 500
     w1=2.1
     w2=1.0
     noise=20
