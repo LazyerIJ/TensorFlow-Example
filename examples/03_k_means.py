@@ -34,7 +34,7 @@ def create_samples(n_clusters, n_samples_per_cluster, n_features,
     return centroids, samples
 
 def plot_clusters(epoch,all_samples, centroids, n_samples_per_cluster):
-    plt.title('[epoch]{0}'.format(epoch))
+    plt.title('{0}'.format(epoch))
     colour = plt.cm.rainbow(np.linspace(0,1,len(centroids)))
 
     for i, centroid in enumerate(centroids):
@@ -68,27 +68,23 @@ if __name__=='__main__':
     embiggen_factor = 70
     np.random.seed(seed)
     plot_idx=1
-    training_iter=9##  < 10
+    training_iter=8
 
-    centroids , samples = create_samples(n_clusters, n_samples_per_cluster,
-                                         n_features, embiggen_factor, seed)
+    centroids , samples = create_samples(n_clusters, n_samples_per_cluster, n_features, embiggen_factor, seed)
     initial_centroids = choose_random_centroids(samples,n_clusters)
+    nearest_indices = assign_to_nearest(samples,initial_centroids)
+    updated_centroids = update_centroids(samples,nearest_indices,n_clusters)
 
     model = tf.global_variables_initializer()
 
     with tf.Session() as sess:
+        samples = samples.eval()
 
         for step in range(training_iter):
 
-            nearest_indices = assign_to_nearest(samples,initial_centroids)
-            updated_centroids = update_centroids(samples,nearest_indices,n_clusters)
-            initial_centroids = updated_centroids
-
-            #sample_values.shape : (500,2), centroids_value.shape : (300,2)
-            sample_values,centroids_values = sess.run([samples, initial_centroids])
-
+            _,centroids_values = sess.run([nearest_indices,updated_centroids])
             plt.subplot(100+training_iter*10+plot_idx)
-            plot_clusters(step,sample_values, centroids_values, n_samples_per_cluster)
+            plot_clusters(step,samples, centroids_values, n_samples_per_cluster)
             plot_idx+=1
 
     plt.show()
